@@ -1,0 +1,190 @@
+<div class="teacher-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>Teacher Dashboard</h1>
+    <button class="export-btn" (click)="exportReport()">
+      📊 Export Report
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card blue">
+        <div class="card-icon">👥</div>
+        <div class="card-content">
+          <div class="card-value">{{ totalStudents }}</div>
+          <div class="card-label">Total Students</div>
+        </div>
+      </div>
+
+      <div class="summary-card purple">
+        <div class="card-icon">🎮</div>
+        <div class="card-content">
+          <div class="card-value">{{ totalGamesPlayed }}</div>
+          <div class="card-label">Games Played</div>
+        </div>
+      </div>
+
+      <div class="summary-card green">
+        <div class="card-icon">⭐</div>
+        <div class="card-content">
+          <div class="card-value">{{ averageClassScore }}</div>
+          <div class="card-label">Avg Score</div>
+        </div>
+      </div>
+
+      <div class="summary-card orange">
+        <div class="card-icon">🏆</div>
+        <div class="card-content">
+          <div class="card-value">{{ mostPlayedGame }}</div>
+          <div class="card-label">Most Popular</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classes Overview -->
+    <div class="section">
+      <h2>Your Classes</h2>
+      <div class="classes-grid">
+        <div
+          *ngFor="let classData of classes"
+          class="class-card"
+          [class.selected]="selectedClass?.classId === classData.classId"
+          (click)="selectClass(classData)">
+          <div class="class-header">
+            <h3>{{ classData.className }}</h3>
+            <span class="student-count">{{ classData.studentCount }} students</span>
+          </div>
+          <div class="class-stats">
+            <div class="stat">
+              <span class="stat-label">Avg Score:</span>
+              <span class="stat-value">{{ classData.averageScore }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Games Played:</span>
+              <span class="stat-value">{{ classData.totalGamesPlayed }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Active:</span>
+              <span class="stat-value">{{ classData.activeStudents }}/{{ classData.studentCount }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Performance Table -->
+    <div class="section">
+      <h2>Top Student Performance</h2>
+      <div class="performance-table-container">
+        <table class="performance-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Student Name</th>
+              <th>Points</th>
+              <th>Level</th>
+              <th>Games</th>
+              <th>Accuracy</th>
+              <th>Last Active</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of students; let i = index">
+              <td class="rank">
+                <div class="rank-badge" [class.top3]="i < 3">
+                  {{ i < 3 ? (i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉') : getStudentRank(i) }}
+                </div>
+              </td>
+              <td class="student-name">
+                <strong>{{ student.studentName }}</strong>
+              </td>
+              <td class="points">{{ student.totalPoints }}</td>
+              <td class="level">
+                <span class="level-badge">Level {{ student.level }}</span>
+              </td>
+              <td class="games-completed">{{ student.gamesCompleted }}</td>
+              <td class="accuracy">
+                <div class="accuracy-display" [class]="getPerformanceColor(student.averageAccuracy)">
+                  {{ student.averageAccuracy.toFixed(1) }}%
+                </div>
+              </td>
+              <td class="last-active">{{ formatDate(student.lastActive) }}</td>
+              <td class="actions">
+                <button class="view-btn" (click)="viewStudentDetails(student.studentId)">
+                  View
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Game Statistics -->
+    <div class="section">
+      <h2>Game Statistics</h2>
+      <div class="game-stats-grid">
+        <div *ngFor="let game of gameStats" class="game-stat-card">
+          <h3>{{ game.gameName }}</h3>
+          <div class="game-metrics">
+            <div class="metric">
+              <div class="metric-icon">🎮</div>
+              <div class="metric-content">
+                <div class="metric-value">{{ game.timesPlayed }}</div>
+                <div class="metric-label">Times Played</div>
+              </div>
+            </div>
+            <div class="metric">
+              <div class="metric-icon">⭐</div>
+              <div class="metric-content">
+                <div class="metric-value">{{ game.averageScore }}</div>
+                <div class="metric-label">Avg Score</div>
+              </div>
+            </div>
+            <div class="metric">
+              <div class="metric-icon">✅</div>
+              <div class="metric-content">
+                <div class="metric-value">{{ game.completionRate.toFixed(1) }}%</div>
+                <div class="metric-label">Completion</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="completion-bar">
+            <div class="completion-fill" [style.width.%]="game.completionRate"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section">
+      <h2>Quick Actions</h2>
+      <div class="quick-actions">
+        <button class="action-btn primary">
+          ➕ Add New Class
+        </button>
+        <button class="action-btn secondary">
+          📧 Send Announcements
+        </button>
+        <button class="action-btn secondary">
+          🎯 Create Assignment
+        </button>
+        <button class="action-btn secondary">
+          📈 View Analytics
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
