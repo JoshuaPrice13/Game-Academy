@@ -1,0 +1,149 @@
+<div class="vocabulary-game">
+  <!-- Game Header -->
+  <div class="game-header">
+    <h2>Vocabulary Builder</h2>
+    <p class="instructions">Master new words and expand your vocabulary!</p>
+  </div>
+
+  <!-- Progress Section -->
+  <div class="progress-section">
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Questions: {{ questionsAnswered }} / {{ totalQuestionsGoal }}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill purple" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+    </div>
+
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Words Learned: {{ wordsLearned.size }} / {{ vocabularyWords.length }}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" [style.width.%]="getWordsLearnedPercentage()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Word Card -->
+  <div class="word-card" *ngIf="currentWordDisplay">
+    <div class="word-header">
+      <h3 class="word-title">{{ currentWordDisplay.word }}</h3>
+      <span class="part-of-speech">{{ currentWordDisplay.partOfSpeech }}</span>
+    </div>
+    <div class="word-definition">
+      <strong>Definition:</strong> {{ currentWordDisplay.definition }}
+    </div>
+  </div>
+
+  <!-- Question Section -->
+  <div class="question-section" *ngIf="currentQuestion">
+    <div class="question-box">
+      <div class="question-number">Question {{ questionsAnswered + 1 }}</div>
+      <h4 class="question-text">{{ currentQuestion.question }}</h4>
+
+      <div class="options-container">
+        <button
+          *ngFor="let option of currentQuestion.options; let i = index"
+          class="option-button"
+          [class.selected]="selectedAnswer === option"
+          [class.correct]="showFeedback && option === currentQuestion.correctAnswer"
+          [class.incorrect]="showFeedback && selectedAnswer === option && option !== currentQuestion.correctAnswer"
+          [disabled]="showFeedback"
+          (click)="selectAnswer(option)">
+          <span class="option-letter">{{ String.fromCharCode(65 + i) }}</span>
+          <span class="option-text">{{ option }}</span>
+        </button>
+      </div>
+
+      <button
+        class="submit-button"
+        (click)="submitAnswer()"
+        [disabled]="!selectedAnswer || showFeedback">
+        Submit Answer
+      </button>
+
+      <!-- Feedback Section -->
+      <div class="feedback-section" *ngIf="showFeedback">
+        <div class="feedback-box" [class.correct]="correctFeedback" [class.incorrect]="!correctFeedback">
+          <div class="feedback-icon">
+            {{ correctFeedback ? '✓' : '✗' }}
+          </div>
+          <div class="feedback-text">{{ feedback }}</div>
+
+          <!-- Word Details (shown on correct answer) -->
+          <div class="word-details" *ngIf="correctFeedback && currentQuestion">
+            <div class="detail-section">
+              <strong>Example:</strong>
+              <p class="example-sentence">{{ currentQuestion.word.exampleSentence }}</p>
+            </div>
+            <div class="detail-row">
+              <div class="detail-section">
+                <strong>Synonyms:</strong>
+                <div class="word-list">
+                  <span *ngFor="let syn of currentQuestion.word.synonyms.slice(0, 3)" class="word-chip synonym">
+                    {{ syn }}
+                  </span>
+                </div>
+              </div>
+              <div class="detail-section">
+                <strong>Antonyms:</strong>
+                <div class="word-list">
+                  <span *ngFor="let ant of currentQuestion.word.antonyms.slice(0, 3)" class="word-chip antonym">
+                    {{ ant }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ currentScore }}</div>
+        <div class="stat-label">Points</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ correctAnswers }}</div>
+        <div class="stat-label">Correct</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ incorrectAnswers }}</div>
+        <div class="stat-label">Incorrect</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ getAccuracy().toFixed(0) }}%</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Words Learned Section -->
+  <div class="learned-words-section" *ngIf="wordsLearned.size > 0">
+    <h3>Words You've Learned</h3>
+    <div class="learned-words-grid">
+      <div *ngFor="let word of wordsLearned" class="learned-word-badge">
+        {{ word }}
+      </div>
+    </div>
+  </div>
+</div>
