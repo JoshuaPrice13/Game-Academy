@@ -1,0 +1,130 @@
+<div class="game-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-screen">
+    <div class="spinner"></div>
+    <p>Loading game...</p>
+  </div>
+
+  <!-- Game Header -->
+  <div *ngIf="!isLoading && game" class="game-header">
+    <div class="game-info">
+      <h1>{{ game.gameTitle }}</h1>
+      <span class="subject-badge">{{ game.subject }}</span>
+    </div>
+
+    <div class="game-stats">
+      <div class="stat">
+        <span class="stat-label">Score</span>
+        <span class="stat-value">{{ currentScore }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Questions</span>
+        <span class="stat-value">{{ questionsAnswered }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Accuracy</span>
+        <span class="stat-value">{{ accuracy.toFixed(1) }}%</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Time</span>
+        <span class="stat-value">{{ formatTime(timeSpent) }}</span>
+      </div>
+    </div>
+
+    <div class="game-controls">
+      <button *ngIf="!isPaused" (click)="pauseGame()" class="btn btn-secondary">
+        Pause
+      </button>
+      <button *ngIf="isPaused" (click)="resumeGame()" class="btn btn-primary">
+        Resume
+      </button>
+      <button (click)="exitGame()" class="btn btn-danger">
+        Exit
+      </button>
+    </div>
+  </div>
+
+  <!-- Pause Overlay -->
+  <div *ngIf="isPaused" class="pause-overlay">
+    <div class="pause-content">
+      <h2>Game Paused</h2>
+      <p>Take a break! Click Resume when you're ready to continue.</p>
+      <div class="pause-stats">
+        <p><strong>Current Score:</strong> {{ currentScore }}</p>
+        <p><strong>Questions Answered:</strong> {{ questionsAnswered }}</p>
+        <p><strong>Accuracy:</strong> {{ accuracy.toFixed(1) }}%</p>
+      </div>
+      <div class="pause-actions">
+        <button (click)="resumeGame()" class="btn btn-primary btn-lg">
+          Resume Game
+        </button>
+        <button (click)="exitGame()" class="btn btn-secondary">
+          Exit to Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Host Container -->
+  <div class="game-content" [class.paused]="isPaused">
+    <ng-template #gameHost></ng-template>
+  </div>
+
+  <!-- Completion Dialog -->
+  <div *ngIf="showCompletionDialog && completionResult" class="completion-overlay">
+    <div class="completion-dialog">
+      <div class="completion-header">
+        <h2>Game Complete!</h2>
+        <div class="completion-icon">🎉</div>
+      </div>
+
+      <div class="completion-stats">
+        <div class="stat-row">
+          <span class="label">Final Score:</span>
+          <span class="value">{{ completionResult.session.currentScore }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">Questions Answered:</span>
+          <span class="value">{{ completionResult.session.questionsAnswered }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">Correct Answers:</span>
+          <span class="value">{{ completionResult.session.correctAnswers }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">Accuracy:</span>
+          <span class="value">{{ completionResult.performanceMetrics.accuracy.toFixed(1) }}%</span>
+        </div>
+        <div class="stat-row">
+          <span class="label">Time Spent:</span>
+          <span class="value">{{ formatTime(completionResult.session.timeSpentSeconds) }}</span>
+        </div>
+      </div>
+
+      <!-- Bonus Points -->
+      <div *ngIf="completionResult.bonusPoints > 0" class="bonus-section">
+        <h3>🌟 Bonus Points Earned!</h3>
+        <p class="bonus-points">+{{ completionResult.bonusPoints }} points</p>
+      </div>
+
+      <!-- Achievements -->
+      <div *ngIf="completionResult.newAchievements.length > 0" class="achievements-section">
+        <h3>🏆 New Achievements!</h3>
+        <div class="achievements-list">
+          <div *ngFor="let achievement of completionResult.newAchievements" class="achievement-badge">
+            {{ achievement }}
+          </div>
+        </div>
+      </div>
+
+      <div class="completion-actions">
+        <button (click)="playAgain()" class="btn btn-primary btn-lg">
+          Play Again
+        </button>
+        <button (click)="returnToGames()" class="btn btn-secondary">
+          Return to Games
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
