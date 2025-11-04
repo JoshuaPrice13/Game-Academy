@@ -1,0 +1,118 @@
+<div class="speed-math-game">
+  <!-- Game Header -->
+  <div class="game-header">
+    <h2>Speed Math Challenge</h2>
+    <p class="instructions">Solve math problems quickly to earn points and build your streak!</p>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>Progress: {{ questionsAnswered }} / {{ totalQuestionsGoal }}</span>
+      <span class="streak" *ngIf="streak > 0">
+        🔥 {{ streak }} Streak
+      </span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+    </div>
+  </div>
+
+  <!-- Difficulty Selector (only show before first question) -->
+  <div class="difficulty-selector" *ngIf="questionsAnswered === 0">
+    <p>Choose your difficulty:</p>
+    <div class="difficulty-buttons">
+      <button
+        class="btn"
+        [class.active]="difficulty === 'EASY'"
+        (click)="setDifficulty('EASY')">
+        Easy
+      </button>
+      <button
+        class="btn"
+        [class.active]="difficulty === 'MEDIUM'"
+        (click)="setDifficulty('MEDIUM')">
+        Medium
+      </button>
+      <button
+        class="btn"
+        [class.active]="difficulty === 'HARD'"
+        (click)="setDifficulty('HARD')">
+        Hard
+      </button>
+    </div>
+  </div>
+
+  <!-- Question Display -->
+  <div class="question-container" *ngIf="currentQuestion">
+    <div class="question-box">
+      <div class="question-text">{{ currentQuestion.displayText }}</div>
+      <div class="question-mark">=</div>
+      <div class="answer-input-wrapper">
+        <input
+          type="number"
+          class="answer-input"
+          [(ngModel)]="userAnswer"
+          (keypress)="handleKeyPress($event)"
+          [disabled]="showFeedback || isPaused"
+          placeholder="?"
+          autofocus
+        />
+      </div>
+    </div>
+
+    <button
+      class="submit-btn"
+      (click)="submitAnswer()"
+      [disabled]="userAnswer.trim() === '' || showFeedback || isPaused">
+      Submit Answer
+    </button>
+
+    <!-- Feedback -->
+    <div class="feedback" *ngIf="showFeedback" [class.correct]="streak > 0 || correctAnswers > incorrectAnswers" [class.incorrect]="streak === 0 && incorrectAnswers > 0">
+      <div class="feedback-icon">
+        {{ feedback.includes('Correct') ? '✓' : '✗' }}
+      </div>
+      <div class="feedback-text">{{ feedback }}</div>
+    </div>
+  </div>
+
+  <!-- Stats Display -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-value">{{ currentScore }}</div>
+      <div class="stat-label">Score</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value">{{ correctAnswers }}</div>
+      <div class="stat-label">Correct</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-value">{{ incorrectAnswers }}</div>
+      <div class="stat-label">Incorrect</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-value">{{ bestStreak }}</div>
+      <div class="stat-label">Best Streak</div>
+    </div>
+  </div>
+
+  <!-- Tips Section -->
+  <div class="tips-section" *ngIf="questionsAnswered === 0">
+    <h3>Tips:</h3>
+    <ul>
+      <li>Answer quickly to maximize your score</li>
+      <li>Build a streak for bonus points</li>
+      <li>5+ streak: +5 bonus points per question</li>
+      <li>10+ streak: +10 bonus points per question</li>
+      <li>15+ streak: +15 bonus points per question</li>
+    </ul>
+  </div>
+</div>
