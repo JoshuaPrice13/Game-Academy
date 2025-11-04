@@ -1,5 +1,6 @@
 package com.gameacademy.service;
 
+import com.gameacademy.controller.WebSocketController;
 import com.gameacademy.exception.ResourceNotFoundException;
 import com.gameacademy.model.Leaderboard;
 import com.gameacademy.model.Student;
@@ -30,6 +31,7 @@ public class LeaderboardService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     private final ClassRepository classRepository;
+    private final WebSocketController webSocketController;
 
     @Transactional
     public Leaderboard calculateClassLeaderboard(String classId, Leaderboard.Period period) {
@@ -98,7 +100,16 @@ public class LeaderboardService {
                     .build();
         }
 
-        return leaderboardRepository.save(leaderboard);
+        Leaderboard savedLeaderboard = leaderboardRepository.save(leaderboard);
+
+        // Broadcast update via WebSocket
+        try {
+            webSocketController.sendLeaderboardUpdate(classId, savedLeaderboard);
+        } catch (Exception e) {
+            log.warn("Failed to broadcast leaderboard update via WebSocket: {}", e.getMessage());
+        }
+
+        return savedLeaderboard;
     }
 
     @Transactional
