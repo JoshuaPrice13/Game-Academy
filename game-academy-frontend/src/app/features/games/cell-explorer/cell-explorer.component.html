@@ -1,0 +1,180 @@
+<div class="cell-explorer-game">
+  <!-- Game Header -->
+  <div class="game-header">
+    <h2>Cell Structure Explorer</h2>
+    <p class="instructions">Learn about cell organelles by answering questions!</p>
+  </div>
+
+  <!-- Progress Bars -->
+  <div class="progress-section">
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Questions: {{ questionsAnswered }} / {{ totalQuestionsGoal }}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill blue" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+    </div>
+
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Cell Parts Found: {{ foundPartsCount }} / {{ cellParts.length }}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" [style.width.%]="getFoundPercentage()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-content">
+    <!-- Cell Diagram -->
+    <div class="cell-diagram-container">
+      <div class="cell-diagram">
+        <!-- SVG Cell Outline -->
+        <svg class="cell-outline" viewBox="0 0 400 300">
+          <!-- Cell membrane (outer boundary) -->
+          <ellipse cx="200" cy="150" rx="180" ry="130"
+                   fill="#e0f2fe"
+                   stroke="#0369a1"
+                   stroke-width="4"/>
+
+          <!-- Nucleus -->
+          <circle cx="200" cy="135" r="40"
+                  [attr.fill]="cellParts[0].found ? '#ddd6fe' : '#f5f5f5'"
+                  [attr.stroke]="isCellPartHighlighted('nucleus') ? '#ff0000' : '#7c3aed'"
+                  [attr.stroke-width]="isCellPartHighlighted('nucleus') ? 6 : 3"
+                  class="organelle"/>
+
+          <!-- Mitochondria 1 -->
+          <ellipse cx="140" cy="180" rx="25" ry="15"
+                   [attr.fill]="cellParts[1].found ? '#fef3c7' : '#f5f5f5'"
+                   [attr.stroke]="isCellPartHighlighted('mitochondria') ? '#ff0000' : '#f59e0b'"
+                   [attr.stroke-width]="isCellPartHighlighted('mitochondria') ? 6 : 3"
+                   class="organelle"/>
+
+          <!-- Mitochondria 2 -->
+          <ellipse cx="260" cy="170" rx="25" ry="15"
+                   [attr.fill]="cellParts[1].found ? '#fef3c7' : '#f5f5f5'"
+                   [attr.stroke]="isCellPartHighlighted('mitochondria') ? '#ff0000' : '#f59e0b'"
+                   [attr.stroke-width]="isCellPartHighlighted('mitochondria') ? 6 : 3"
+                   class="organelle"/>
+
+          <!-- Ribosomes (small dots) -->
+          <circle cx="160" cy="105" r="5"
+                  [attr.fill]="cellParts[4].found ? '#f87171' : '#e5e5e5'"
+                  [attr.stroke]="isCellPartHighlighted('ribosome') ? '#ff0000' : '#dc2626'"
+                  [attr.stroke-width]="isCellPartHighlighted('ribosome') ? 3 : 1.5"
+                  class="organelle"/>
+          <circle cx="175" cy="115" r="5"
+                  [attr.fill]="cellParts[4].found ? '#f87171' : '#e5e5e5'"
+                  [attr.stroke]="isCellPartHighlighted('ribosome') ? '#ff0000' : '#dc2626'"
+                  [attr.stroke-width]="isCellPartHighlighted('ribosome') ? 3 : 1.5"
+                  class="organelle"/>
+          <circle cx="220" cy="110" r="5"
+                  [attr.fill]="cellParts[4].found ? '#f87171' : '#e5e5e5'"
+                  [attr.stroke]="isCellPartHighlighted('ribosome') ? '#ff0000' : '#dc2626'"
+                  [attr.stroke-width]="isCellPartHighlighted('ribosome') ? 3 : 1.5"
+                  class="organelle"/>
+
+          <!-- Endoplasmic Reticulum -->
+          <path d="M 240 100 Q 260 120 250 140 Q 240 160 230 180"
+                [attr.stroke]="isCellPartHighlighted('endoplasmic_reticulum') ? '#ff0000' : '#8b5cf6'"
+                [attr.stroke-width]="isCellPartHighlighted('endoplasmic_reticulum') ? 8 : 4"
+                fill="none"
+                [attr.opacity]="cellParts[5].found ? 1 : 0.3"
+                class="organelle"/>
+
+          <!-- Golgi Apparatus -->
+          <g [attr.opacity]="cellParts[6].found ? 1 : 0.3">
+            <rect x="270" y="165" width="35" height="5"
+                  [attr.fill]="isCellPartHighlighted('golgi_apparatus') ? '#ff0000' : '#14b8a6'"
+                  class="organelle"/>
+            <rect x="270" y="172" width="35" height="5"
+                  [attr.fill]="isCellPartHighlighted('golgi_apparatus') ? '#ff0000' : '#14b8a6'"
+                  class="organelle"/>
+            <rect x="270" y="179" width="35" height="5"
+                  [attr.fill]="isCellPartHighlighted('golgi_apparatus') ? '#ff0000' : '#14b8a6'"
+                  class="organelle"/>
+          </g>
+
+          <!-- Vacuole -->
+          <circle cx="100" cy="150" r="30"
+                  [attr.fill]="cellParts[7].found ? '#bfdbfe' : '#f5f5f5'"
+                  [attr.stroke]="isCellPartHighlighted('vacuole') ? '#ff0000' : '#3b82f6'"
+                  [attr.stroke-width]="isCellPartHighlighted('vacuole') ? 6 : 3"
+                  class="organelle"/>
+        </svg>
+
+        <!-- Legend -->
+        <div class="cell-legend">
+          <h3>Cell Parts:</h3>
+          <div class="legend-items">
+            <div *ngFor="let part of cellParts"
+                 class="legend-item"
+                 [class.found]="part.found"
+                 [class.highlighted]="isCellPartHighlighted(part.id)">
+              <span class="checkmark">{{ part.found ? '✓' : '○' }}</span>
+              <span class="part-name">{{ part.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Panel -->
+    <div class="question-panel" *ngIf="currentQuestion">
+      <h3>Question {{ questionsAnswered + 1 }}</h3>
+      <p class="question-text">{{ currentQuestion.question }}</p>
+
+      <div class="options-grid">
+        <button
+          *ngFor="let option of currentQuestion.options"
+          class="option-btn"
+          [class.selected]="selectedAnswer === option"
+          [class.correct]="showFeedback && option === currentQuestion.correctAnswer"
+          [class.incorrect]="showFeedback && selectedAnswer === option && option !== currentQuestion.correctAnswer"
+          [disabled]="showFeedback"
+          (click)="selectAnswer(option)">
+          {{ option }}
+        </button>
+      </div>
+
+      <button
+        class="submit-btn"
+        (click)="submitAnswer()"
+        [disabled]="!selectedAnswer || showFeedback">
+        Submit Answer
+      </button>
+
+      <!-- Feedback -->
+      <div class="feedback" *ngIf="showFeedback" [class.correct]="correctFeedback" [class.incorrect]="!correctFeedback">
+        <div class="feedback-icon">
+          {{ correctFeedback ? '✓' : '✗' }}
+        </div>
+        <div class="feedback-text">{{ feedback }}</div>
+        <div class="cell-info" *ngIf="correctFeedback && currentQuestion">
+          <strong>{{ currentQuestion.cellPart.name }}:</strong> {{ currentQuestion.cellPart.description }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-icon">🎯</span>
+      <span class="stat-label">Score:</span>
+      <span class="stat-value">{{ currentScore }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-icon">✅</span>
+      <span class="stat-label">Correct:</span>
+      <span class="stat-value">{{ correctAnswers }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-icon">📊</span>
+      <span class="stat-label">Accuracy:</span>
+      <span class="stat-value">{{ getAccuracy().toFixed(0) }}%</span>
+    </div>
+  </div>
+</div>
