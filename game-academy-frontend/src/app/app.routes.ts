@@ -41,33 +41,34 @@ export const routes: Routes = [
       {
         path: 'achievements',
         loadComponent: () => import('./features/achievements/achievements.component').then(m => m.AchievementsComponent)
-      },
-      {
-        path: 'profile',
-        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
       }
+      // Profile component not yet implemented
+      // {
+      //   path: 'profile',
+      //   loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+      // }
     ]
   },
 
-  // Teacher routes (protected)
-  {
-    path: 'teacher',
-    canActivate: [authGuard, teacherGuard],
-    children: [
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./features/teacher/dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
-      },
-      {
-        path: 'classes',
-        loadComponent: () => import('./features/teacher/classes/class-list.component').then(m => m.ClassListComponent)
-      },
-      {
-        path: 'classes/:classId',
-        loadComponent: () => import('./features/teacher/classes/class-detail.component').then(m => m.ClassDetailComponent)
-      }
-    ]
-  },
+  // Teacher routes (protected) - Components not yet implemented
+  // {
+  //   path: 'teacher',
+  //   canActivate: [authGuard, teacherGuard],
+  //   children: [
+  //     {
+  //       path: 'dashboard',
+  //       loadComponent: () => import('./features/teacher/dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
+  //     },
+  //     {
+  //       path: 'classes',
+  //       loadComponent: () => import('./features/teacher/classes/class-list.component').then(m => m.ClassListComponent)
+  //     },
+  //     {
+  //       path: 'classes/:classId',
+  //       loadComponent: () => import('./features/teacher/classes/class-detail.component').then(m => m.ClassDetailComponent)
+  //     }
+  //   ]
+  // },
 
   // Wildcard route
   {

@@ -131,6 +131,9 @@ export class VocabularyBuilderComponent extends BaseGameComponent {
   wordsLearned: Set<string> = new Set();
   currentWordDisplay: VocabularyWord | null = null;
 
+  // Make String accessible in template
+  String = String;
+
   private feedbackTimeout: any = null;
   private usedWords: Set<string> = new Set();
 

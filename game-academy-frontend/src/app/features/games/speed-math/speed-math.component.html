@@ -24,20 +24,20 @@
     <div class="difficulty-buttons">
       <button
         class="btn"
-        [class.active]="difficulty === 'EASY'"
-        (click)="setDifficulty('EASY')">
+        [class.active]="difficulty === DifficultyLevel.EASY"
+        (click)="setDifficulty(DifficultyLevel.EASY)">
         Easy
       </button>
       <button
         class="btn"
-        [class.active]="difficulty === 'MEDIUM'"
-        (click)="setDifficulty('MEDIUM')">
+        [class.active]="difficulty === DifficultyLevel.MEDIUM"
+        (click)="setDifficulty(DifficultyLevel.MEDIUM)">
         Medium
       </button>
       <button
         class="btn"
-        [class.active]="difficulty === 'HARD'"
-        (click)="setDifficulty('HARD')">
+        [class.active]="difficulty === DifficultyLevel.HARD"
+        (click)="setDifficulty(DifficultyLevel.HARD)">
         Hard
       </button>
     </div>

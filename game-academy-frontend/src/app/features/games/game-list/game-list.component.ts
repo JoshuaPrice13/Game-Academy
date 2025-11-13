@@ -232,4 +232,8 @@ export class GameListComponent implements OnInit {
       default: return '#6b7280';
     }
   }
+
+  getGameCountBySubject(subject: string): number {
+    return this.games.filter(g => g.subject === subject).length;
+  }
 }

@@ -22,7 +22,7 @@
       <div class="user-menu-container">
         <button class="user-menu-button" (click)="toggleUserMenu()">
           <div class="user-avatar">
-            {{ currentUser?.username?.charAt(0).toUpperCase() }}
+            {{ currentUser?.username?.charAt(0)?.toUpperCase() }}
           </div>
           <div class="user-info">
             <span class="user-name">{{ currentUser?.username }}</span>

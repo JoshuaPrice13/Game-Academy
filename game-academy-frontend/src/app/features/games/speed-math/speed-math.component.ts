@@ -30,6 +30,9 @@ export class SpeedMathComponent extends BaseGameComponent {
   totalQuestionsGoal: number = 20;
   operators: string[] = ['+', '-', '×'];
 
+  // Make DifficultyLevel accessible in template
+  DifficultyLevel = DifficultyLevel;
+
   private feedbackTimeout: any = null;
 
   getGameInfo(): GameInfo {

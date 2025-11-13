@@ -157,7 +157,7 @@
           </span>
           <span class="category-name">{{ subject }}</span>
           <span class="category-count">
-            {{ games.filter(g => g.subject === subject).length }} games
+            {{ getGameCountBySubject(subject) }} games
           </span>
         </button>
       </div>
