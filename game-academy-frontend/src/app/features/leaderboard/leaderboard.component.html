@@ -1,0 +1,235 @@
+<app-navigation>
+  <div class="leaderboard-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">🏆 Leaderboard</h1>
+        <p class="page-subtitle">
+          Compete with your classmates and climb to the top!
+        </p>
+      </div>
+    </div>
+
+    <!-- Period Selector -->
+    <div class="period-selector">
+      <button
+        class="period-button"
+        [class.active]="selectedPeriod === 'daily'"
+        (click)="changePeriod('daily')">
+        <span class="period-icon">📅</span>
+        <span class="period-label">Today</span>
+      </button>
+      <button
+        class="period-button"
+        [class.active]="selectedPeriod === 'weekly'"
+        (click)="changePeriod('weekly')">
+        <span class="period-icon">📊</span>
+        <span class="period-label">This Week</span>
+      </button>
+      <button
+        class="period-button"
+        [class.active]="selectedPeriod === 'all-time'"
+        (click)="changePeriod('all-time')">
+        <span class="period-icon">⭐</span>
+        <span class="period-label">All Time</span>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading leaderboard...</p>
+    </div>
+
+    <!-- Leaderboard Content -->
+    <div class="leaderboard-content" *ngIf="!isLoading">
+      <!-- Top 3 Podium -->
+      <div class="podium-section" *ngIf="filteredData.length >= 3">
+        <div class="podium-container">
+          <!-- 2nd Place -->
+          <div class="podium-card second-place">
+            <div class="podium-rank">
+              <span class="rank-medal">🥈</span>
+              <span class="rank-number">2</span>
+            </div>
+            <div
+              class="podium-avatar"
+              [style.background]="getAvatarColor(filteredData[1].userId)">
+              {{ getAvatarLetter(filteredData[1].username) }}
+            </div>
+            <h3 class="podium-username">{{ filteredData[1].username }}</h3>
+            <div class="podium-points">
+              <span class="points-value">{{ filteredData[1].totalPoints }}</span>
+              <span class="points-label">points</span>
+            </div>
+            <div class="podium-stats">
+              <div class="podium-stat">
+                <span class="stat-value">{{ filteredData[1].gamesPlayed }}</span>
+                <span class="stat-label">games</span>
+              </div>
+              <div class="podium-stat">
+                <span class="stat-value">{{ filteredData[1].accuracy }}%</span>
+                <span class="stat-label">accuracy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1st Place -->
+          <div class="podium-card first-place">
+            <div class="crown-icon">👑</div>
+            <div class="podium-rank">
+              <span class="rank-medal">🥇</span>
+              <span class="rank-number">1</span>
+            </div>
+            <div
+              class="podium-avatar"
+              [style.background]="getAvatarColor(filteredData[0].userId)">
+              {{ getAvatarLetter(filteredData[0].username) }}
+            </div>
+            <h3 class="podium-username">{{ filteredData[0].username }}</h3>
+            <div class="podium-points">
+              <span class="points-value">{{ filteredData[0].totalPoints }}</span>
+              <span class="points-label">points</span>
+            </div>
+            <div class="podium-stats">
+              <div class="podium-stat">
+                <span class="stat-value">{{ filteredData[0].gamesPlayed }}</span>
+                <span class="stat-label">games</span>
+              </div>
+              <div class="podium-stat">
+                <span class="stat-value">{{ filteredData[0].accuracy }}%</span>
+                <span class="stat-label">accuracy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3rd Place -->
+          <div class="podium-card third-place">
+            <div class="podium-rank">
+              <span class="rank-medal">🥉</span>
+              <span class="rank-number">3</span>
+            </div>
+            <div
+              class="podium-avatar"
+              [style.background]="getAvatarColor(filteredData[2].userId)">
+              {{ getAvatarLetter(filteredData[2].username) }}
+            </div>
+            <h3 class="podium-username">{{ filteredData[2].username }}</h3>
+            <div class="podium-points">
+              <span class="points-value">{{ filteredData[2].totalPoints }}</span>
+              <span class="points-label">points</span>
+            </div>
+            <div class="podium-stats">
+              <div class="podium-stat">
+                <span class="stat-value">{{ filteredData[2].gamesPlayed }}</span>
+                <span class="stat-label">games</span>
+              </div>
+              <div class="podium-stat">
+                <span class="stat-value">{{ filteredData[2].accuracy }}%</span>
+                <span class="stat-label">accuracy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Leaderboard Table -->
+      <div class="leaderboard-table-card">
+        <div class="table-header">
+          <h2 class="table-title">Full Rankings</h2>
+          <button class="find-me-button" (click)="scrollToCurrentUser()">
+            📍 Find Me
+          </button>
+        </div>
+
+        <div class="leaderboard-table">
+          <!-- Table Header -->
+          <div class="table-row table-header-row">
+            <div class="col-rank">Rank</div>
+            <div class="col-player">Player</div>
+            <div class="col-points">Points</div>
+            <div class="col-games">Games</div>
+            <div class="col-accuracy">Accuracy</div>
+            <div class="col-level">Level</div>
+            <div class="col-streak">Streak</div>
+            <div class="col-trend">Trend</div>
+          </div>
+
+          <!-- Table Body -->
+          <div
+            *ngFor="let entry of filteredData"
+            class="leaderboard-row"
+            [class.current-user]="entry.isCurrentUser"
+            [ngClass]="getRankClass(entry.rank)">
+
+            <div class="col-rank">
+              <span class="rank-icon" *ngIf="entry.rank <= 3">
+                {{ getRankIcon(entry.rank) }}
+              </span>
+              <span class="rank-number" *ngIf="entry.rank > 3">
+                {{ entry.rank }}
+              </span>
+            </div>
+
+            <div class="col-player">
+              <div
+                class="player-avatar"
+                [style.background]="getAvatarColor(entry.userId)">
+                {{ getAvatarLetter(entry.username) }}
+              </div>
+              <span class="player-name">
+                {{ entry.username }}
+                <span class="you-badge" *ngIf="entry.isCurrentUser">You</span>
+              </span>
+            </div>
+
+            <div class="col-points">
+              <span class="points-value">{{ entry.totalPoints }}</span>
+            </div>
+
+            <div class="col-games">
+              {{ entry.gamesPlayed }}
+            </div>
+
+            <div class="col-accuracy">
+              <div class="accuracy-bar">
+                <div class="accuracy-fill" [style.width.%]="entry.accuracy"></div>
+              </div>
+              <span class="accuracy-text">{{ entry.accuracy }}%</span>
+            </div>
+
+            <div class="col-level">
+              <span class="level-badge">Lv {{ entry.level }}</span>
+            </div>
+
+            <div class="col-streak">
+              <span class="streak-value">🔥 {{ entry.streak }}</span>
+            </div>
+
+            <div class="col-trend">
+              <span
+                class="trend-indicator"
+                [ngClass]="getRankChangeClass(entry.rankChange)"
+                *ngIf="entry.rankChange">
+                {{ getRankChangeIcon(entry.rankChange) }}
+                <span class="trend-value">{{ Math.abs(entry.rankChange!) }}</span>
+              </span>
+              <span class="trend-indicator neutral" *ngIf="!entry.rankChange">
+                ➖
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="filteredData.length === 0">
+        <div class="empty-icon">🏆</div>
+        <h3 class="empty-title">No leaderboard data</h3>
+        <p class="empty-message">
+          Start playing games to appear on the leaderboard!
+        </p>
+      </div>
+    </div>
+  </div>
+</app-navigation>

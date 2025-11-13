@@ -1,0 +1,184 @@
+<app-navigation>
+  <div class="achievements-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">⭐ Achievements</h1>
+        <p class="page-subtitle">
+          Track your progress and earn rewards for your accomplishments!
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ getUnlockedCount() }} / {{ achievements.length }}</div>
+          <div class="stat-label">Achievements Unlocked</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💎</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ getTotalPoints() }}</div>
+          <div class="stat-label">Points Earned</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ getCompletionPercentage().toFixed(0) }}%</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        <div class="filter-buttons">
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'all'"
+            (click)="changeCategory('all')">
+            All
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'games'"
+            (click)="changeCategory('games')">
+            🎮 Games
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'points'"
+            (click)="changeCategory('points')">
+            💰 Points
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'streak'"
+            (click)="changeCategory('streak')">
+            🔥 Streak
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'accuracy'"
+            (click)="changeCategory('accuracy')">
+            🎯 Accuracy
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'speed'"
+            (click)="changeCategory('speed')">
+            ⚡ Speed
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedCategory === 'learning'"
+            (click)="changeCategory('learning')">
+            📖 Learning
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <div class="filter-buttons">
+          <button
+            class="filter-button"
+            [class.active]="selectedStatus === 'all'"
+            (click)="changeStatus('all')">
+            All
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedStatus === 'unlocked'"
+            (click)="changeStatus('unlocked')">
+            ✅ Unlocked
+          </button>
+          <button
+            class="filter-button"
+            [class.active]="selectedStatus === 'locked'"
+            (click)="changeStatus('locked')">
+            🔒 Locked
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements Grid -->
+    <div class="achievements-grid">
+      <div
+        *ngFor="let achievement of filteredAchievements"
+        class="achievement-card"
+        [class.unlocked]="achievement.isUnlocked"
+        [class.locked]="!achievement.isUnlocked"
+        [ngClass]="getTierClass(achievement.tier)">
+
+        <!-- Tier Badge -->
+        <div class="tier-badge" [style.background]="getTierColor(achievement.tier)">
+          {{ achievement.tier }}
+        </div>
+
+        <!-- Lock Overlay -->
+        <div class="lock-overlay" *ngIf="!achievement.isUnlocked">
+          <span class="lock-icon">🔒</span>
+        </div>
+
+        <!-- Achievement Icon -->
+        <div class="achievement-icon" [class.grayscale]="!achievement.isUnlocked">
+          {{ achievement.icon }}
+        </div>
+
+        <!-- Achievement Content -->
+        <div class="achievement-content">
+          <h3 class="achievement-title">{{ achievement.title }}</h3>
+          <p class="achievement-description">{{ achievement.description }}</p>
+
+          <!-- Requirement -->
+          <div class="achievement-requirement">
+            <span class="requirement-icon">📋</span>
+            <span class="requirement-text">{{ achievement.requirement }}</span>
+          </div>
+
+          <!-- Progress Bar (for locked achievements with progress) -->
+          <div class="progress-section" *ngIf="!achievement.isUnlocked && achievement.progress !== undefined">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgressPercentage(achievement)"></div>
+            </div>
+            <div class="progress-text">
+              {{ achievement.progress }} / {{ achievement.maxProgress }}
+            </div>
+          </div>
+
+          <!-- Unlocked Date -->
+          <div class="unlocked-date" *ngIf="achievement.isUnlocked && achievement.unlockedDate">
+            <span class="date-icon">✓</span>
+            <span class="date-text">Unlocked {{ formatDate(achievement.unlockedDate) }}</span>
+          </div>
+        </div>
+
+        <!-- Points Reward -->
+        <div class="points-reward">
+          <span class="points-icon">💎</span>
+          <span class="points-value">+{{ achievement.pointsReward }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredAchievements.length === 0">
+      <div class="empty-icon">🏆</div>
+      <h3 class="empty-title">No achievements found</h3>
+      <p class="empty-message">
+        Try adjusting your filters to see more achievements.
+      </p>
+    </div>
+  </div>
+</app-navigation>

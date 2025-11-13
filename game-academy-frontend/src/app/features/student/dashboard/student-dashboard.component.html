@@ -1,0 +1,179 @@
+<app-navigation>
+  <div class="dashboard-container" *ngIf="!isLoading">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <div class="welcome-content">
+        <h1 class="welcome-title">
+          {{ getGreeting() }}, {{ currentUser?.username }}! 👋
+        </h1>
+        <p class="welcome-subtitle">
+          Ready to continue your learning adventure?
+        </p>
+      </div>
+      <div class="level-badge">
+        <div class="level-icon">⭐</div>
+        <div class="level-info">
+          <span class="level-label">Level</span>
+          <span class="level-number">{{ stats.level }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card points">
+        <div class="stat-header">
+          <span class="stat-icon">🎯</span>
+          <span class="stat-label">Total Points</span>
+        </div>
+        <div class="stat-value">{{ stats.totalPoints }}</div>
+        <div class="stat-footer">
+          <div class="progress-info">
+            <span class="progress-text">{{ getPointsToNextLevel() }} to Level {{ stats.level + 1 }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getLevelProgress()"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card rank">
+        <div class="stat-header">
+          <span class="stat-icon">🏆</span>
+          <span class="stat-label">Class Rank</span>
+        </div>
+        <div class="stat-value">
+          #{{ stats.rank }}
+          <span class="stat-suffix">/ {{ stats.totalStudents }}</span>
+        </div>
+        <div class="stat-footer">
+          <span class="stat-detail">Top {{ getRankPercentile() }}% of class</span>
+        </div>
+      </div>
+
+      <div class="stat-card games">
+        <div class="stat-header">
+          <span class="stat-icon">🎮</span>
+          <span class="stat-label">Games Played</span>
+        </div>
+        <div class="stat-value">{{ stats.gamesPlayed }}</div>
+        <div class="stat-footer">
+          <span class="stat-detail">{{ stats.accuracy }}% average accuracy</span>
+        </div>
+      </div>
+
+      <div class="stat-card streak">
+        <div class="stat-header">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-label">Daily Streak</span>
+        </div>
+        <div class="stat-value">{{ stats.streak }} days</div>
+        <div class="stat-footer">
+          <span class="stat-detail">Keep it up!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Quick Actions -->
+      <div class="card quick-actions-card">
+        <div class="card-header">
+          <h2 class="card-title">Quick Play</h2>
+          <a routerLink="/student/games" class="view-all-link">
+            View All Games →
+          </a>
+        </div>
+        <div class="quick-games-grid">
+          <a
+            *ngFor="let game of quickGames"
+            [routerLink]="['/student/games', game.id]"
+            class="game-card"
+            [style.border-left-color]="game.color">
+            <div class="game-header">
+              <span class="game-icon">{{ game.icon }}</span>
+              <div class="game-info">
+                <h3 class="game-title">{{ game.title }}</h3>
+                <span class="game-subject">{{ game.subject }}</span>
+              </div>
+            </div>
+            <div class="game-stats">
+              <div class="game-stat">
+                <span class="stat-label-sm">Plays</span>
+                <span class="stat-value-sm">{{ game.playCount }}</span>
+              </div>
+              <div class="game-stat">
+                <span class="stat-label-sm">Best</span>
+                <span class="stat-value-sm">{{ game.bestScore }}</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card activity-card">
+        <div class="card-header">
+          <h2 class="card-title">Recent Activity</h2>
+        </div>
+        <div class="activity-list">
+          <div
+            *ngFor="let activity of recentActivities"
+            class="activity-item"
+            [ngClass]="getActivityClass(activity.type)">
+            <div class="activity-icon">
+              {{ activity.icon }}
+            </div>
+            <div class="activity-content">
+              <h4 class="activity-title">{{ activity.title }}</h4>
+              <p class="activity-description">{{ activity.description }}</p>
+              <span class="activity-time">{{ getTimeAgo(activity.timestamp) }}</span>
+            </div>
+            <div class="activity-points">
+              +{{ activity.points }}
+            </div>
+          </div>
+
+          <div class="no-activity" *ngIf="recentActivities.length === 0">
+            <span class="no-activity-icon">📭</span>
+            <p>No recent activity</p>
+            <a routerLink="/student/games" class="btn-primary-sm">Start Playing</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="action-cards-grid">
+      <a routerLink="/student/leaderboard" class="action-card leaderboard">
+        <div class="action-icon">🏆</div>
+        <div class="action-content">
+          <h3 class="action-title">Leaderboard</h3>
+          <p class="action-description">See where you rank against your classmates</p>
+        </div>
+      </a>
+
+      <a routerLink="/student/achievements" class="action-card achievements">
+        <div class="action-icon">⭐</div>
+        <div class="action-content">
+          <h3 class="action-title">Achievements</h3>
+          <p class="action-description">{{ stats.achievements }} badges earned</p>
+        </div>
+      </a>
+
+      <a routerLink="/student/profile" class="action-card profile">
+        <div class="action-icon">👤</div>
+        <div class="action-content">
+          <h3 class="action-title">My Profile</h3>
+          <p class="action-description">View and edit your profile</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+</app-navigation>

@@ -1,0 +1,166 @@
+<app-navigation>
+  <div class="games-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">🎮 Educational Games</h1>
+        <p class="page-subtitle">
+          Choose a game to start learning and earning points!
+        </p>
+      </div>
+      <div class="game-count-badge">
+        <span class="count">{{ filteredGames.length }}</span>
+        <span class="label">Games Available</span>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search games, subjects, or tags..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()">
+        <button
+          *ngIf="searchQuery"
+          class="clear-search"
+          (click)="searchQuery = ''; onSearchChange()">
+          ✕
+        </button>
+      </div>
+
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label class="filter-label">Subject</label>
+          <select
+            class="filter-select"
+            [(ngModel)]="selectedSubject"
+            (ngModelChange)="onSubjectChange()">
+            <option *ngFor="let subject of subjects" [value]="subject">
+              {{ subject }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Difficulty</label>
+          <select
+            class="filter-select"
+            [(ngModel)]="selectedDifficulty"
+            (ngModelChange)="onDifficultyChange()">
+            <option *ngFor="let difficulty of difficulties" [value]="difficulty">
+              {{ difficulty }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Sort By</label>
+          <select
+            class="filter-select"
+            [(ngModel)]="sortBy"
+            (ngModelChange)="onSortChange()">
+            <option value="popular">Most Popular</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="difficulty">Difficulty</option>
+          </select>
+        </div>
+
+        <button class="clear-filters-btn" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="games-grid" *ngIf="filteredGames.length > 0">
+      <div
+        *ngFor="let game of filteredGames"
+        class="game-card"
+        [style.border-left-color]="game.color">
+        <div class="game-header">
+          <div class="game-icon-large" [style.background]="game.color">
+            {{ game.icon }}
+          </div>
+          <div class="difficulty-badge" [ngClass]="getDifficultyClass(game.difficulty)">
+            {{ game.difficulty }}
+          </div>
+        </div>
+
+        <div class="game-body">
+          <h3 class="game-title">{{ game.title }}</h3>
+          <p class="game-subject">{{ game.subject }}</p>
+          <p class="game-description">{{ game.description }}</p>
+
+          <div class="game-tags">
+            <span *ngFor="let tag of game.tags.slice(0, 3)" class="tag">
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+
+        <div class="game-stats-row">
+          <div class="stat-item">
+            <span class="stat-icon">👥</span>
+            <span class="stat-value">{{ game.playCount }}</span>
+            <span class="stat-label">plays</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-value">{{ game.estimatedTime }}</span>
+            <span class="stat-label">min</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">📊</span>
+            <span class="stat-value">{{ game.averageScore }}%</span>
+            <span class="stat-label">avg</span>
+          </div>
+        </div>
+
+        <div class="game-footer">
+          <a [routerLink]="['/student/games', game.id]" class="play-button">
+            <span class="button-icon">▶️</span>
+            <span class="button-text">Play Now</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredGames.length === 0">
+      <div class="empty-icon">🎮</div>
+      <h3 class="empty-title">No games found</h3>
+      <p class="empty-message">
+        Try adjusting your filters or search query to find games.
+      </p>
+      <button class="btn-primary" (click)="clearFilters()">
+        Clear All Filters
+      </button>
+    </div>
+
+    <!-- Subject Categories (Quick Filter) -->
+    <div class="categories-section">
+      <h2 class="section-title">Browse by Subject</h2>
+      <div class="categories-grid">
+        <button
+          *ngFor="let subject of subjects.slice(1)"
+          class="category-card"
+          (click)="selectedSubject = subject; onSubjectChange()">
+          <span class="category-icon">
+            {{ subject === 'Mathematics' ? '🔢' :
+               subject === 'Science' ? '🔬' :
+               subject === 'Language Arts' ? '📚' :
+               subject === 'Social Studies' ? '🌍' : '📖' }}
+          </span>
+          <span class="category-name">{{ subject }}</span>
+          <span class="category-count">
+            {{ games.filter(g => g.subject === subject).length }} games
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</app-navigation>
