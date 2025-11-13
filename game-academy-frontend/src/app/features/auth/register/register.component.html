@@ -1,0 +1,156 @@
+<div class="register-container">
+  <div class="register-card">
+    <!-- Logo and Header -->
+    <div class="register-header">
+      <h1 class="logo">🎮 Game Academy</h1>
+      <h2>Create Your Account</h2>
+      <p class="subtitle">Start your learning adventure today</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-alert">
+      <span class="error-icon">⚠️</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Register Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- Role Selection -->
+      <div class="role-selector">
+        <p class="role-label">I am a:</p>
+        <div class="role-options">
+          <label class="role-option" [class.selected]="roleControl?.value === 'STUDENT'">
+            <input type="radio" formControlName="role" value="STUDENT" />
+            <div class="role-card">
+              <div class="role-icon">🎓</div>
+              <div class="role-name">Student</div>
+            </div>
+          </label>
+          <label class="role-option" [class.selected]="roleControl?.value === 'TEACHER'">
+            <input type="radio" formControlName="role" value="TEACHER" />
+            <div class="role-card">
+              <div class="role-icon">👨‍🏫</div>
+              <div class="role-name">Teacher</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          placeholder="Choose a username"
+          [class.error]="usernameControl?.invalid && usernameControl?.touched"
+        />
+        <div *ngIf="usernameControl?.invalid && usernameControl?.touched" class="field-error">
+          <span *ngIf="usernameControl?.errors?.['required']">Username is required</span>
+          <span *ngIf="usernameControl?.errors?.['minlength']">Username must be at least 3 characters</span>
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="your.email@school.edu"
+          [class.error]="emailControl?.invalid && emailControl?.touched"
+        />
+        <div *ngIf="emailControl?.invalid && emailControl?.touched" class="field-error">
+          <span *ngIf="emailControl?.errors?.['required']">Email is required</span>
+          <span *ngIf="emailControl?.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            placeholder="Create a strong password"
+            [class.error]="passwordControl?.invalid && passwordControl?.touched"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            tabindex="-1"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="passwordControl?.invalid && passwordControl?.touched" class="field-error">
+          <span *ngIf="passwordControl?.errors?.['required']">Password is required</span>
+          <span *ngIf="passwordControl?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            placeholder="Re-enter your password"
+            [class.error]="confirmPasswordControl?.invalid && confirmPasswordControl?.touched"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="toggleConfirmPasswordVisibility()"
+            tabindex="-1"
+          >
+            {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="confirmPasswordControl?.invalid && confirmPasswordControl?.touched" class="field-error">
+          <span *ngIf="confirmPasswordControl?.errors?.['required']">Please confirm your password</span>
+          <span *ngIf="confirmPasswordControl?.errors?.['passwordMismatch']">Passwords do not match</span>
+        </div>
+      </div>
+
+      <!-- Terms Agreement -->
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label" [class.error]="agreeToTermsControl?.invalid && agreeToTermsControl?.touched">
+          <input type="checkbox" formControlName="agreeToTerms" />
+          <span>
+            I agree to the
+            <a href="/terms" target="_blank">Terms of Service</a> and
+            <a href="/privacy" target="_blank">Privacy Policy</a>
+          </span>
+        </label>
+        <div *ngIf="agreeToTermsControl?.invalid && agreeToTermsControl?.touched" class="field-error">
+          <span>You must agree to the terms to continue</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="register-btn" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading" class="loading">
+          <span class="spinner"></span>
+          Creating account...
+        </span>
+      </button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="login-prompt">
+      <p>
+        Already have an account?
+        <a routerLink="/login" class="login-link">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>
