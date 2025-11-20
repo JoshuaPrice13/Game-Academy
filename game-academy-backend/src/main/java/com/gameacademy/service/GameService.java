@@ -260,14 +260,9 @@ public class GameService {
         updateGameProgressEntry(completedSession);
 
         // Check for new achievements
-        List<String> newAchievements = achievementService.checkAndAwardAchievements(session.getStudentId());
+        List<Student.Achievement> newAchievements = achievementService.checkAchievements(session.getStudentId());
 
-        // Send notifications for achievements
-        if (!newAchievements.isEmpty()) {
-            for (String achievement : newAchievements) {
-                notificationService.sendAchievementNotification(session.getStudentId(), achievement);
-            }
-        }
+        // Note: Notifications are sent by achievementService.awardAchievement(), no need to send again here
 
         // Prepare response
         Map<String, Object> response = new HashMap<>();
@@ -338,7 +333,7 @@ public class GameService {
             progress = existingProgress.get();
             progress.setAttemptsCount(progress.getAttemptsCount() + 1);
             progress.setScore(session.getCurrentScore());
-            progress.setTimeSpent(progress.getTimeSpent() + session.getTimeSpentSeconds());
+            progress.setTimeSpent(progress.getTimeSpent() + (int) session.getTimeSpentSeconds());
 
             // Update best score if this session was better
             if (session.getCurrentScore() > progress.getBestScore()) {
@@ -351,7 +346,7 @@ public class GameService {
             progress.setScore(session.getCurrentScore());
             progress.setBestScore(session.getCurrentScore());
             progress.setAttemptsCount(1);
-            progress.setTimeSpent(session.getTimeSpentSeconds());
+            progress.setTimeSpent((int) session.getTimeSpentSeconds());
         }
 
         progress.setLastPlayed(session.getEndTime());
